@@ -1,9 +1,19 @@
 from abc import ABC, abstractmethod
 
+from layers.initializers.XavierNormal import XavierNormal
+from layers.initializers.initializer import Initializer
+
 
 class Layer(ABC):
+    counter = 0
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        self.cnt = Layer.counter
+        Layer.counter += 1
+        self._init_layer(*args, **kwargs)
+
+    @abstractmethod
+    def _init_layer(self, *args, **kwargs):
         pass
 
     @abstractmethod
@@ -14,49 +24,26 @@ class Layer(ABC):
     def backward(self):
         pass
 
-    def hasGrads(self):
-        return False
+    def parameters(self):
+        return {}
+
+    def grads(self):
+        return {}
 
 
 import numpy as np
 
 
-class Dense(Layer):
-
-    def __init__(self, input_size: int, output_size: int, activation: Layer):
-
-        self.activation = activation
-        w = np.random.randn(input_size, output_size) / np.sqrt(input_size)
-        b = np.zeros(output_size)
-        self.affine = Affine(w, b)
-
-    def forward(self, x):
-        x = self.affine.forward(x)
-        x = self.activation.forward(x)
-        return x
-
-    def hasGrads(self):
-        return True
-
-    def backward(self, dout):
-        dout = self.activation.backward(dout)
-        dout = self.affine.backward(dout)
-        return dout
-
-    def grads(self):
-        return self.affine.grads()
-
-    def params(self):
-        return self.affine.params
-
-
 class Affine(Layer):
-    counter = 0
 
-    def __init__(self, W, b):
+    def _init_layer(self, output_size: int, init: Initializer):
+        self.output_size = output_size
+        self.initializer = init
 
-        Affine.counter += 1
-        self.cnt = Affine.counter
+    def init_weights(self, input_size):
+        W = self.initializer.init(input_size, self.output_size)
+        b = np.zeros(self.output_size)
+
         self.params = {}
         self.params[f"W{self.cnt}"] = W
         self.params[f"b{self.cnt}"] = b
@@ -73,6 +60,9 @@ class Affine(Layer):
         self.dw = np.dot(self.x.T, dout)
         self.db = np.sum(dout, axis=0)
         return dx
+
+    def parameters(self):
+        return self.params
 
     def grads(self):
         return {f"W{self.cnt}": self.dw, f"b{self.cnt}": self.db}

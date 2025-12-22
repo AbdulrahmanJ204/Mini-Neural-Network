@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Sigmoid(Layer):
-    def __init__(self):
+    def _init_layer(self):
         self.out = None
     
     def forward(self, x):

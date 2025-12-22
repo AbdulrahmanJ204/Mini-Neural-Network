@@ -2,7 +2,7 @@ from layers.layer import Layer
 
 
 class Relu(Layer):
-    def __init__(self):
+    def _init_layer(self):
         self.mask = None
 
     def forward(self, x):

@@ -1,21 +1,33 @@
 from typing import List
 import numpy as np
 
-from layers.layer import Dense, Layer
+from layers.layer import Affine, Layer
+from layers.optimization.BatchNormalization import BatchNormalization
 
 
 class NeuralNetwork:
     def __init__(self, layers: List[Layer], lastLayer: Layer):
         self.layers = layers
         self.lastLayer = lastLayer
+        self.initalized = False
 
-    def init_weights():
-        # TODO :in Lab 6 there is more than one way to do this , check it
-        pass
-
-    def predict(self, x):
+    def init_weights(self, input_size):
+        current_size = input_size
+        self.initalized = True
         for layer in self.layers:
-            x = layer.forward(x)
+            if isinstance(layer, Affine):
+                layer.init_weights(current_size)
+                current_size = layer.output_size
+            elif isinstance(layer, BatchNormalization):
+                # BatchNormalization doesn't change dimensions
+                layer.init_weights(current_size)
+
+    def predict(self, x, train_flg=True):
+        for layer in self.layers:
+            if isinstance(layer, BatchNormalization):
+                x = layer.forward(x, train_flg)
+            else:
+                x = layer.forward(x)
         return x
 
     def loss(self, x, t):
@@ -23,7 +35,7 @@ class NeuralNetwork:
         return self.lastLayer.forward(y, t)
 
     def accuracy(self, x, t):
-        y = self.predict(x)
+        y = self.predict(x, False)
         y = np.argmax(y, axis=1)
         if t.ndim != 1:
             """
@@ -49,7 +61,6 @@ class NeuralNetwork:
         grads = []
         for layer in layers:
             dout = layer.backward(dout)
-            if layer.hasGrads():
-                grads.append(layer.grads())
+            grads.append(layer.grads())
 
         return list(reversed(grads))

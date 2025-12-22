@@ -9,7 +9,7 @@ class Dropout(Layer):
     http://arxiv.org/abs/1207.0580
     """
 
-    def __init__(self, dropout_ratio=0.5):
+    def _init_layer(self, dropout_ratio=0.5):
         self.dropout_ratio = dropout_ratio
         self.mask = None
 
