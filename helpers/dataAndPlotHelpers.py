@@ -3,19 +3,19 @@ import sys
 from time import time
 import numpy as np
 
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 
 
 def fetchData():
-    from tensorflow.keras.datasets import mnist
 
-    # Load MNIST data
 
-    (x_train, t_train), (x_test, t_test) = mnist.load_data()
-    print(x_train.shape)  # (60000, 28, 28)
-    print(x_test.shape)  # (10000, 28, 28)
-
+    X, y = fetch_openml("mnist_784", return_X_y=True, as_frame=False)
+    x_train, x_test, t_train, t_test = train_test_split(
+        X, y, test_size=10000, shuffle=False
+    )
     # Reshape
     x_train = x_train.reshape(-1, 784)
     x_test = x_test.reshape(-1, 784)
@@ -38,6 +38,8 @@ def normalizeData(x_train, x_test):
     x_train /= 255.0
     x_test /= 255.0
     return x_train, x_test
+
+
 def plotResults(loss1, acc1, loss2, acc2, figName="training_plot"):
     import matplotlib
 
@@ -62,4 +64,3 @@ def plotResults(loss1, acc1, loss2, acc2, figName="training_plot"):
 
     plt.tight_layout()
     plt.savefig(f"{figName}.png")
-
