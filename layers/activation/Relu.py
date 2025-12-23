@@ -2,9 +2,10 @@ from layers.layer import Layer
 
 
 class Relu(Layer):
-    def _init_layer(self):
+    def __init__(self):
         self.mask = None
-
+        super().__init__()
+        
     def forward(self, x):
         self.mask = x <= 0
         out = x.copy()

@@ -7,14 +7,9 @@ from layers.initializers.initializer import Initializer
 class Layer(ABC):
     counter = 0
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self.cnt = Layer.counter
         Layer.counter += 1
-        self._init_layer(*args, **kwargs)
-
-    @abstractmethod
-    def _init_layer(self, *args, **kwargs):
-        pass
 
     @abstractmethod
     def forward(self):
@@ -36,9 +31,10 @@ import numpy as np
 
 class Affine(Layer):
 
-    def _init_layer(self, output_size: int, init: Initializer):
+    def __init__(self, output_size: int, init: Initializer):
         self.output_size = output_size
         self.initializer = init
+        super().__init__()
 
     def init_weights(self, input_size):
         W = self.initializer.init(input_size, self.output_size)

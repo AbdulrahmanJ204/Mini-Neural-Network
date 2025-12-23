@@ -4,15 +4,16 @@ from layers.layer import Layer
 
 # TODO : Understand this
 
+
 class Dropout(Layer):
     """
     http://arxiv.org/abs/1207.0580
     """
 
-    def _init_layer(self, dropout_ratio=0.5):
+    def __init__(self, dropout_ratio=0.5):
         self.dropout_ratio = dropout_ratio
         self.mask = None
-
+        super().__init__()
 
     def forward(self, x, train_flg=True):
         if train_flg:

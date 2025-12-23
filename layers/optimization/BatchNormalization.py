@@ -5,7 +5,7 @@ from layers.layer import Layer
 
 # TODO : Understand this
 class BatchNormalization(Layer):
-    def _init_layer(self, gamma=1.0, beta=0.0, momentum=0.9):
+    def __init__(self, gamma=1.0, beta=0.0, momentum=0.9):
         self.gamma_init = gamma
         self.beta_init = beta
         self.running_mean = None
@@ -17,6 +17,7 @@ class BatchNormalization(Layer):
         self.dgamma = None
         self.dbeta = None
         self.params = {}
+        super().__init__()
 
     def init_weights(self, input_size):
         self.params[f"gamma{self.cnt}"] = np.ones(input_size) * self.gamma_init

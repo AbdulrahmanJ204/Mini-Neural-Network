@@ -7,11 +7,12 @@ from layers.layer import Layer
 
 
 class SoftMaxWithCrossEntropy(Layer):
-    def _init_layer(self):
+    def __init__(self):
         self.loss = None
         self.y = None
         self.t = None
-
+        super().__init__()
+        
     def forward(self, x, t):
         self.t = t
         self.y = softmax(x)

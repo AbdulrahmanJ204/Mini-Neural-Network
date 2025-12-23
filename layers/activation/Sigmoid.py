@@ -5,9 +5,9 @@ import numpy as np
 
 
 class Sigmoid(Layer):
-    def _init_layer(self):
+    def __init__(self):
         self.out = None
-    
+        super().__init__()
     def forward(self, x):
         out = 1 / (1 + np.exp(-x))
         self.out = out

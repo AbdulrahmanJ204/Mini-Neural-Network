@@ -4,11 +4,12 @@ from layers.layer import Layer
 
 
 class MeanSquaredError(Layer):
-    def _init_layer(self):
+    def __init__(self):
         self.loss = None
         self.y = None
         self.t = None
-
+        super().__init__()
+        
     def forward(self, y, t):
         self.y = y
         self.t = t

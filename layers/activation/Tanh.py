@@ -5,7 +5,11 @@ import numpy as np
 
 
 class Tanh(Layer):
-    def _init_layer(self, x):
+    def __init__(self):
+        self.out = None
+        super().__init__()
+
+    def forward(self, x):
         self.out = np.tanh(x)
         return self.out
 
