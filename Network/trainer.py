@@ -8,7 +8,6 @@ class Trainer:
         self.network = network
         self.optimizer = optimizer
 
-    
     def fit(self, x_train, x_test, t_train, t_test, batch_size=100, epochs=10):
 
         if not self.network.initalized:
@@ -44,3 +43,6 @@ class Trainer:
 
         loss = self.network.loss(x_batch, t_batch)
         return loss
+
+    def evaluate(self, x_test, t_test):
+        return self.network.accuracy(x_test, t_test)
