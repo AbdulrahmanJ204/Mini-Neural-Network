@@ -3,7 +3,7 @@ import numpy as np
 from layers.layer import Layer
 
 
-# TODO : Understand this
+
 class BatchNormalization(Layer):
     def __init__(self, gamma=1.0, beta=0.0, momentum=0.9):
         self.gamma_init = gamma

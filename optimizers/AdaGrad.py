@@ -1,6 +1,5 @@
 from optimizers.Optimizer import Optimizer
 
-
 import numpy as np
 
 
@@ -9,11 +8,10 @@ class AdaGrad(Optimizer):
 
     def __init__(self, lr=0.01):
         self.lr = lr
-        self.h = None
+        self.h = {}
 
     def updateParams(self, params, grads):
 
-        self.h = {}
         for key, val in params.items():
             if key not in self.h:
                 self.h[key] = np.zeros_like(val)
