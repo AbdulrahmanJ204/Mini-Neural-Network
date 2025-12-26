@@ -1,7 +1,8 @@
 from Network.neuralNetwork import NeuralNetwork
 from Network.trainer import Trainer
 from Network.tuner import HyperParameterTuner
-from helpers.dataAndPlotHelpers import fetchData, normalizeData, plotResults
+from helpers.plot_helpers import plotResults
+from helpers.data_helpers import normailze_mnist_data, fetchData
 from layers.activation.Linear import Linear
 from layers.activation.Sigmoid import Sigmoid
 from layers.initializers.HeNormal import HeNormal
@@ -39,7 +40,7 @@ x_train, x_test, t_train, t_test = fetchData()
 # net = getNet()
 # trainer = Trainer(net, opt())
 #
-x_train, x_test = normalizeData(x_train, x_test)
+x_train, x_test = normailze_mnist_data(x_train, x_test)
 # loss1, accuracy1 = trainer.fit(x_train, x_test, t_train, t_test , epochs= epochs)
 # plotResults(loss, accuracy, loss1, accuracy1 , f"Adam")
 h = HyperParameterTuner()

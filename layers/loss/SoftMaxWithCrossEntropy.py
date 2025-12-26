@@ -1,4 +1,4 @@
-from helpers.math import cross_entropy_error, softmax
+from helpers.math_helpers import cross_entropy_error, softmax
 
 
 import numpy as np
