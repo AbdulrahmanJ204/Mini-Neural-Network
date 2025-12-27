@@ -1,21 +1,21 @@
 import copy
 
-from Network.neuralNetwork import NeuralNetwork
-from Network.trainer import Trainer
-from layers.activation.Sigmoid import Sigmoid
-from layers.activation.Relu import Relu
-from layers.activation.Linear import Linear
-from layers.initializers.HeNormal import HeNormal
-from layers.initializers.SmallGaussian import SmallGaussian
-from layers.initializers.XavierNormal import XavierNormal
-from layers.Affine import Affine
-from layers.loss.SoftMaxWithCrossEntropy import SoftMaxWithCrossEntropy
-from layers.optimization.BatchNormalization import BatchNormalization
-from layers.optimization.Dropout import Dropout
-from optimizers.AdaGrad import AdaGrad
-from optimizers.Adam import Adam
-from optimizers.Momentum import Momentum
-from optimizers.SGD import SGD
+from network.neural_network import NeuralNetwork
+from network.trainer import Trainer
+from layers.activation.sigmoid import Sigmoid
+from layers.activation.relu import Relu
+from layers.activation.linear import Linear
+from layers.initializers.he_normal import HeNormal
+from layers.initializers.small_gaussian import SmallGaussian
+from layers.initializers.xavier_normal import XavierNormal
+from layers.affine import Affine
+from layers.loss.softmax_with_cross_entropy import SoftMaxWithCrossEntropy
+from layers.optimization.batch_normalization import BatchNormalization
+from layers.optimization.dropout import Dropout
+from optimizers.adagrad import AdaGrad
+from optimizers.adam import Adam
+from optimizers.momentum import Momentum
+from optimizers.sgd import SGD
 
 from itertools import product
 

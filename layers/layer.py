@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from layers.initializers.XavierNormal import XavierNormal
+from layers.initializers.xavier_normal import XavierNormal
 
 
 class Layer(ABC):

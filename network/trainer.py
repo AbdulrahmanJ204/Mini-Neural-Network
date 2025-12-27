@@ -1,5 +1,5 @@
-from Network.neuralNetwork import NeuralNetwork
-from optimizers.Optimizer import Optimizer
+from network.neural_network import NeuralNetwork
+from optimizers.optimizer import Optimizer
 import numpy as np
 
 
@@ -12,7 +12,6 @@ class Trainer:
 
         if not self.network.initialized:
             input_size = x_train.shape[1]
-            print(input_size)
             self.network.init_weights(input_size)
 
         training_size = len(x_train)

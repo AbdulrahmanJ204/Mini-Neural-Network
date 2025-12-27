@@ -1,10 +1,10 @@
 from typing import List
 import numpy as np
 
-from layers.Affine import Affine
+from layers.affine import Affine
 from layers.layer import Layer
-from layers.optimization.BatchNormalization import BatchNormalization
-from layers.optimization.Dropout import Dropout
+from layers.optimization.batch_normalization import BatchNormalization
+from layers.optimization.dropout import Dropout
 
 
 class NeuralNetwork:

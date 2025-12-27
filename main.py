@@ -1,44 +1,46 @@
-from Network.neuralNetwork import NeuralNetwork
-from Network.trainer import Trainer
-from Network.tuner import HyperParameterTuner
+from network.neural_network import NeuralNetwork
+from network.trainer import Trainer
+from network.tuner import HyperParameterTuner
 from helpers.plot_helpers import plotResults
 from helpers.data_helpers import normailze_mnist_data, fetchData
-from layers.activation.Linear import Linear
-from layers.activation.Sigmoid import Sigmoid
-from layers.initializers.HeNormal import HeNormal
-from layers.initializers.SmallGaussian import SmallGaussian
-from layers.initializers.XavierNormal import XavierNormal
-from layers.Affine import Affine
-from layers.loss.SoftMaxWithCrossEntropy import SoftMaxWithCrossEntropy
-from layers.optimization.BatchNormalization import BatchNormalization
-from layers.optimization.Dropout import Dropout
-from optimizers.AdaGrad import AdaGrad
-from optimizers.Adam import Adam
-from optimizers.Momentum import Momentum
-from optimizers.SGD import SGD
+from layers.activation.linear import Linear
+from layers.activation.sigmoid import Sigmoid
+from layers.initializers.he_normal import HeNormal
+from layers.initializers.small_gaussian import SmallGaussian
+from layers.initializers.xavier_normal import XavierNormal
+from layers.affine import Affine
+from layers.loss.softmax_with_cross_entropy import SoftMaxWithCrossEntropy
+from layers.optimization.batch_normalization import BatchNormalization
+from layers.optimization.dropout import Dropout
+from optimizers.adagrad import AdaGrad
+from optimizers.adam import Adam
+from optimizers.momentum import Momentum
+from optimizers.sgd import SGD
 
-# def getNet():
-#     return NeuralNetwork(
-#         [
-#             Affine(100, SmallGaussian()),
-#             Sigmoid(),
-#             BatchNormalization(),
-#             Affine(10, SmallGaussian()),
-#         ],
-#         SoftMaxWithCrossEntropy(),
-#     )
-#
+
+def get_net():
+    return NeuralNetwork(
+        [
+            Affine(100, SmallGaussian()),
+            Sigmoid(),
+            BatchNormalization(),
+            Affine(10, SmallGaussian()),
+        ],
+        SoftMaxWithCrossEntropy(),
+    )
+
+
 #
 # net = getNet()
-# opt = Adam
+opt = Adam
 # trainer = Trainer(net, opt())
 #
 x_train, x_test, t_train, t_test = fetchData()
 # epochs = 2
 # loss, accuracy = trainer.fit(x_train, x_test, t_train, t_test , epochs=epochs)
 #
-# net = getNet()
-# trainer = Trainer(net, opt())
+net = get_net()
+trainer = Trainer(net, opt())
 #
 x_train, x_test = normailze_mnist_data(x_train, x_test)
 # loss1, accuracy1 = trainer.fit(x_train, x_test, t_train, t_test , epochs= epochs)
