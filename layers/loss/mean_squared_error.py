@@ -22,7 +22,3 @@ class MeanSquaredError(Layer):
         return dx
 
 
-# بعض المراجع بتقسم على
-# 2 * N
-# بالforward
-#  ساعتها بكون المشتق ما فيه 2

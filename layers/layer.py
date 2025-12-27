@@ -17,7 +17,9 @@ class Layer(ABC):
     @abstractmethod
     def backward(self):
         pass
-
+    @classmethod
+    def reset_counter(cls):
+        cls.counter = 0    
     def parameters(self):
         return {}
 

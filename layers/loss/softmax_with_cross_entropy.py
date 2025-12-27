@@ -1,4 +1,4 @@
-from helpers.math_helpers import cross_entropy_error, softmax
+from utils.math import cross_entropy_error, softmax
 
 
 import numpy as np
@@ -12,7 +12,7 @@ class SoftMaxWithCrossEntropy(Layer):
         self.y = None
         self.t = None
         super().__init__()
-        
+
     def forward(self, x, t):
         self.t = t
         self.y = softmax(x)

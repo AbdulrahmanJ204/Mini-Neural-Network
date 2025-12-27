@@ -1,4 +1,4 @@
-from network.neural_network import NeuralNetwork
+from models.neural_network import NeuralNetwork
 from optimizers.optimizer import Optimizer
 import numpy as np
 

@@ -1,9 +1,9 @@
-from hyper_parameters_tuning.tuner import Tuner
+from tuning.tuner import Tuner
 from layers.affine import Affine
-from layers.optimization.batch_normalization import BatchNormalization
-from layers.optimization.dropout import Dropout
-from network.neural_network import NeuralNetwork
-from network.trainer import Trainer
+from layers.normalization.batch_normalization import BatchNormalization
+from layers.regularization.dropout import Dropout
+from models.neural_network import NeuralNetwork
+from training.trainer import Trainer
 from optimizers.adam import Adam
 from optimizers.momentum import Momentum
 

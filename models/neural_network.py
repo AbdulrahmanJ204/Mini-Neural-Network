@@ -3,12 +3,13 @@ import numpy as np
 
 from layers.affine import Affine
 from layers.layer import Layer
-from layers.optimization.batch_normalization import BatchNormalization
-from layers.optimization.dropout import Dropout
+from layers.normalization.batch_normalization import BatchNormalization
+from layers.regularization.dropout import Dropout
 
 
 class NeuralNetwork:
     def __init__(self, layers: List[Layer], last_layer: Layer):
+        Layer.reset_counter()
         self.layers = layers
         self.last_layer = last_layer
         self.initialized = False
@@ -42,17 +43,6 @@ class NeuralNetwork:
         y = self.predict(x, False)
         y = np.argmax(y, axis=1)
         if t.ndim != 1:
-            """
-              for one hot encoding i think
-            [[0, 0, 1],    # Sample 0: class 2
-              [1, 0, 0],    # Sample 1: class 0
-              [0, 1, 0]]    # Sample 2: class 1
-            convert it to : [
-              2 ,
-              0 ,
-              1
-            ]
-            """
             t = np.argmax(t, axis=1)
 
         accuracy = np.sum(y == t) / len(x)
