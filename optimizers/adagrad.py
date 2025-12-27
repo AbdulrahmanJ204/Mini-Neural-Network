@@ -1,7 +1,5 @@
 from optimizers.optimizer import Optimizer
-
 import numpy as np
-
 
 class AdaGrad(Optimizer):
     """AdaGrad"""
@@ -10,7 +8,7 @@ class AdaGrad(Optimizer):
         self.lr = lr
         self.h = {}
 
-    def updateParams(self, params, grads):
+    def update_params(self, params, grads):
 
         for key, val in params.items():
             if key not in self.h:

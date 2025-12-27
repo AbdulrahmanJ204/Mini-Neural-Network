@@ -1,12 +1,8 @@
 from utils.math import cross_entropy_error, softmax
+from layers.loss.loss import Loss
 
 
-import numpy as np
-
-from layers.layer import Layer
-
-
-class SoftMaxWithCrossEntropy(Layer):
+class SoftMaxWithCrossEntropy(Loss):
     def __init__(self):
         self.loss = None
         self.y = None

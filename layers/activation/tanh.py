@@ -1,6 +1,4 @@
 from layers.layer import Layer
-
-
 import numpy as np
 
 
@@ -14,5 +12,5 @@ class Tanh(Layer):
         return self.out
 
     def backward(self, dout):
-        dx = dout * (1 - self.out**2)
+        dx = dout * (1 - self.out ** 2)
         return dx

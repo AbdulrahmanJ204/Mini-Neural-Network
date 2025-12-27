@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from layers.initializers.xavier_normal import XavierNormal
-
 
 class Layer(ABC):
     counter = 0
@@ -11,15 +9,17 @@ class Layer(ABC):
         Layer.counter += 1
 
     @abstractmethod
-    def forward(self):
+    def forward(self, x):
         pass
 
     @abstractmethod
-    def backward(self):
+    def backward(self, dout):
         pass
+
     @classmethod
     def reset_counter(cls):
-        cls.counter = 0    
+        cls.counter = 0
+
     def parameters(self):
         return {}
 

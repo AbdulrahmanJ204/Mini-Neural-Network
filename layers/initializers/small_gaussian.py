@@ -3,5 +3,5 @@ import numpy as np
 
 
 class SmallGaussian(Initializer):
-    def init(self, input, output):
-        return np.random.randn(input, output) * 0.01
+    def init(self, input_size, output):
+        return np.random.randn(input_size, output) * 0.01

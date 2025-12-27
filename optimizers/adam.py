@@ -11,7 +11,7 @@ class Adam(Optimizer):
         self.m = {}
         self.v = {}
 
-    def updateParams(self, params, grads):
+    def update_params(self, params, grads):
 
         for key, val in params.items():
             if key not in self.m:

@@ -6,8 +6,8 @@ class Optimizer(ABC):
 
         for layer, g in zip(network.layers, grads):
             params = layer.parameters()
-            self.updateParams(params, g)
+            self.update_params(params, g)
 
     @abstractmethod
-    def updateParams(self, params, grads):
+    def update_params(self, params, grads):
         pass

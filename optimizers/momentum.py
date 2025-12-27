@@ -1,6 +1,4 @@
 from optimizers.optimizer import Optimizer
-
-
 import numpy as np
 
 
@@ -10,7 +8,7 @@ class Momentum(Optimizer):
         self.momentum = momentum
         self.v = {}
 
-    def updateParams(self, params, grads):
+    def update_params(self, params, grads):
 
         for key, val in params.items():
             if key not in self.v:

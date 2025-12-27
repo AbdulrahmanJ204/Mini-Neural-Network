@@ -1,3 +1,6 @@
+from typing import Type
+
+from layers import Loss
 from tuning.tuner import Tuner
 from layers.affine import Affine
 from layers.normalization.batch_normalization import BatchNormalization
@@ -7,11 +10,11 @@ from training.trainer import Trainer
 from optimizers.adam import Adam
 from optimizers.momentum import Momentum
 
-
 import copy
 from itertools import product
 
 
+# todo : format and avoid deep copy
 class LayerSpecs:
     def __init__(self, params):
         self.neurons_number = params["layer_neurons_number"]
@@ -20,21 +23,26 @@ class LayerSpecs:
         self.dropout_rate = params["dropout_rate"]
         self.batch_normalization = params["batch_normalization"]
 
-    def build(self):
+    def build(self, is_last_hidden=False):
         layers = [
-            Dropout(self.dropout_rate),
             Affine(self.neurons_number, self.init_method()),
-            self.activation(),
         ]
 
         if self.batch_normalization:
             layers.append(BatchNormalization())
+
+        layers.append(self.activation())
+
+        if not is_last_hidden:
+            layers.append(Dropout(self.dropout_rate))
+
         return layers
 
 
 class GridTuner(Tuner):
     def __init__(self):
-        self._networks = []
+        self.best_params = None
+        self._networks_config = []
         self._possible_layers = []
         self._possible_optimizers = []
         self._hidden_layers = []
@@ -48,7 +56,7 @@ class GridTuner(Tuner):
         self._params = {}
 
     def reset(self):
-        self._networks = []
+        self._networks_config = []
         self._possible_layers = []
         self._possible_optimizers = []
         self._hidden_layers = []
@@ -87,9 +95,14 @@ class GridTuner(Tuner):
 
     def __generate_hidden_layers(self, n_layers):
         for combo in product(self._possible_layers, repeat=n_layers):
-            self._hidden_layers.append([layer.build() for layer in combo])
+            self._hidden_layers.append(
+                [
+                    layer.build(is_last_hidden=(i == n_layers - 1))
+                    for i, layer in enumerate(combo)
+                ]
+            )
 
-    def __generate_possible_networks(self, output_layer, loss_layer):
+    def __generate_possible_networks(self, output_layer, loss_layer_cls: Type[Loss]):
         for n_layers in self._params["hidden_number"]:
             self._hidden_layers = []
             self.__generate_hidden_layers(n_layers)
@@ -97,25 +110,33 @@ class GridTuner(Tuner):
                 layers = [layer for collect in hidden_set for layer in collect]
                 layers.append(copy.deepcopy(output_layer))
 
-                self._networks.append(NeuralNetwork(layers, copy.deepcopy(loss_layer)))
+                self._networks_config.append({"layers": layers, "loss": loss_layer_cls})
 
     def get_best_params(
-        self, params, x_train, x_test, t_train, t_test, output_layer, loss_layer
+        self,
+        params: dict,
+        x_train,
+        x_test,
+        t_train,
+        t_test,
+        output_layer: Affine,
+        loss_layer_cls: Type[Loss],
     ):
         self.reset()
         self._params = params
         self.__generate_possible_layers()
         self.__generate_possible_optimizers()
-        self.__generate_possible_networks(output_layer, loss_layer)
+        self.__generate_possible_networks(output_layer, loss_layer_cls)
         best_accuracy = 0
         self.best_params = {}
         for optimizer_o in self._possible_optimizers:
-            for network_o in self._networks:
+            for network_config in self._networks_config:
                 for batch_size in self._params["batch_size"]:
                     for epoch in self._params["epochs"]:
 
-                        network = copy.deepcopy(network_o)
-                        print(x_train.shape[1])
+                        network = NeuralNetwork(
+                            network_config["layers"], network_config["loss"]()
+                        )
                         network.init_weights(x_train.shape[1])
                         optimizer = copy.deepcopy(optimizer_o)
                         trainer = Trainer(network, optimizer)

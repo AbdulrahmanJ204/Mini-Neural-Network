@@ -3,7 +3,6 @@ import numpy as np
 from layers.layer import Layer
 
 
-
 class BatchNormalization(Layer):
     def __init__(self, gamma=1.0, beta=0.0, momentum=0.9):
         self.gamma_init = gamma
@@ -13,6 +12,7 @@ class BatchNormalization(Layer):
         self.momentum = momentum
         self.batch_size = None
         self.xc = None
+        self.xn = None
         self.std = None
         self.dgamma = None
         self.dbeta = None
@@ -28,14 +28,14 @@ class BatchNormalization(Layer):
 
     def forward(self, x, train_flg=True):
         if self.running_mean is None:
-            N, D = x.shape
-            self.running_mean = np.zeros(D)
-            self.running_var = np.zeros(D)
+            n, d = x.shape
+            self.running_mean = np.zeros(d)
+            self.running_var = np.zeros(d)
 
         if train_flg:
             mu = x.mean(axis=0)
             xc = x - mu
-            var = np.mean(xc**2, axis=0)
+            var = np.mean(xc ** 2, axis=0)
             std = np.sqrt(var + 1e-7)
             xn = xc / std
 
@@ -44,14 +44,14 @@ class BatchNormalization(Layer):
             self.xn = xn
             self.std = std
             self.running_mean = (
-                self.momentum * self.running_mean + (1 - self.momentum) * mu
+                    self.momentum * self.running_mean + (1 - self.momentum) * mu
             )
             self.running_var = (
-                self.momentum * self.running_var + (1 - self.momentum) * var
+                    self.momentum * self.running_var + (1 - self.momentum) * var
             )
         else:
             xc = x - self.running_mean
-            xn = xc / ((np.sqrt(self.running_var + 1e-7)))
+            xn = xc / (np.sqrt(self.running_var + 1e-7))
 
         gamma = self.params[f"gamma{self.cnt}"]
         beta = self.params[f"beta{self.cnt}"]
@@ -60,7 +60,6 @@ class BatchNormalization(Layer):
 
     def backward(self, dout):
         gamma = self.params[f"gamma{self.cnt}"]
-        beta = self.params[f"beta{self.cnt}"]
 
         dbeta = dout.sum(axis=0)
         dgamma = np.sum(self.xn * dout, axis=0)

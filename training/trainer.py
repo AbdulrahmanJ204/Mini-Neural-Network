@@ -1,6 +1,8 @@
+import random
 from models.neural_network import NeuralNetwork
 from optimizers.optimizer import Optimizer
 import numpy as np
+
 
 
 class Trainer:
@@ -8,30 +10,34 @@ class Trainer:
         self.network = network
         self.optimizer = optimizer
 
-    def fit(self, x_train, x_test, t_train, t_test, batch_size=100, epochs=10):
+    def fit(self, x_train, x_val, t_train, t_val, batch_size=100, epochs=10):
 
         if not self.network.initialized:
             input_size = x_train.shape[1]
             self.network.init_weights(input_size)
 
-        training_size = len(x_train)
-        iter_per_epoch = training_size // batch_size
-
         loss_hist = []
         accuracy_hist = []
         loss = 0
-        for i in range(epochs):
-            for _ in range(iter_per_epoch):
-                batch_mask = np.random.choice(training_size, batch_size)
-                x_batch = x_train[batch_mask]
-                t_batch = t_train[batch_mask]
 
+        def batch_generator(x, t, batch_size):
+            n = len(x)
+            indices = np.arange(n)
+            np.random.shuffle(indices)
+            for start in range(0, n, batch_size):
+                end = min(start + batch_size, n)
+                batch_idx = indices[start:end]
+                yield x[batch_idx], t[batch_idx]
+
+        for i in range(epochs):
+            for x_batch, t_batch in batch_generator(x_train, t_train, batch_size):
                 loss = self.train_step(x_batch, t_batch)
                 loss_hist.append(loss)
 
-            acc = self.network.accuracy(x_test, t_test)
+            acc = self.network.accuracy(x_val, t_val)
             accuracy_hist.append(acc)
-            print(f"Epoch {i + 1}, Loss: {loss:.4f}, Acc: {acc:.4f}")
+
+            print(f" Epoch {i + 1}, Loss: {loss:.4f}, Acc: {acc:.4f}")
 
         return loss_hist, accuracy_hist
 

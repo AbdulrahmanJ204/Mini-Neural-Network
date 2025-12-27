@@ -1,10 +1,10 @@
 import numpy as np
 import sys
 from time import time
-import numpy as np
 
 
-def plotResults(loss1, acc1, loss2, acc2, figName="training_plot"):
+
+def plot_two_train(loss1, acc1, loss2, acc2, figName="training_plot"):
     import matplotlib
 
     matplotlib.use("Agg")
@@ -30,7 +30,7 @@ def plotResults(loss1, acc1, loss2, acc2, figName="training_plot"):
     plt.savefig(f"{figName}.png")
 
 
-def plotResults(loss, acc, figName="training_plot"):
+def plot_single_train(loss, acc, figName="training_plot"):
     import matplotlib
 
     matplotlib.use("Agg")

@@ -8,8 +8,11 @@ import numpy as np
 class Affine(Layer):
 
     def __init__(self, output_size: int, init: Initializer):
+        self.params = {}
         self.output_size = output_size
         self.input_size = 0
+        self.dw = None
+        self.db = None
         self.initializer = init
         super().__init__()
 
@@ -17,8 +20,6 @@ class Affine(Layer):
         W = self.initializer.init(input_size, self.output_size)
         b = np.zeros(self.output_size)
         self.input_size = input_size
-
-        self.params = {}
         self.params[f"W{self.cnt}"] = W
         self.params[f"b{self.cnt}"] = b
         self.dw = None

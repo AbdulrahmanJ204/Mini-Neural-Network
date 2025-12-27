@@ -1,9 +1,9 @@
 import numpy as np
 
-from layers.layer import Layer
+from layers.loss.loss import Loss
 
 
-class MeanSquaredError(Layer):
+class MeanSquaredError(Loss):
     def __init__(self):
         self.loss = None
         self.y = None
