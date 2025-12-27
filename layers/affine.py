@@ -9,6 +9,7 @@ class Affine(Layer):
 
     def __init__(self, output_size: int, init: Initializer):
         self.output_size = output_size
+        self.input_size = 0
         self.initializer = init
         super().__init__()
 

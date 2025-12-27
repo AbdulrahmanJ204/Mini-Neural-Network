@@ -1,6 +1,7 @@
+from hyper_parameters_tuning.random_tuner import RandomTuner
 from network.neural_network import NeuralNetwork
 from network.trainer import Trainer
-from network.tuner import HyperParameterTuner
+from hyper_parameters_tuning.grid_tuner import GridTuner
 from helpers.plot_helpers import plotResults
 from helpers.data_helpers import normailze_mnist_data, fetchData
 from layers.activation.linear import Linear
@@ -45,10 +46,10 @@ trainer = Trainer(net, opt())
 x_train, x_test = normailze_mnist_data(x_train, x_test)
 # loss1, accuracy1 = trainer.fit(x_train, x_test, t_train, t_test , epochs= epochs)
 # plotResults(loss, accuracy, loss1, accuracy1 , f"Adam")
-h = HyperParameterTuner()
+h = RandomTuner()
 
 print(
-    h.tune(
+    h.get_best_params(
         x_train=x_train,
         x_test=x_test,
         t_train=t_train,
@@ -61,6 +62,7 @@ print(
                 "layer_neurons_number": [20, 50],
                 "init_method": [XavierNormal],
                 "dropout_rate": [0.0, 0.1],
+                "activation": [Sigmoid],
                 "batch_normalization": [False],
             },
             "optimizer": [Adam, Momentum],
