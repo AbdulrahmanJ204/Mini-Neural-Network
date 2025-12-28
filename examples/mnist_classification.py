@@ -1,16 +1,10 @@
-"""
-MNIST Classification Example
-============================
-Train a neural network on MNIST dataset.
-"""
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import random
-import sys
-
 import numpy as np
-
-sys.path.append("..")
-
 
 from layers import Affine, Relu
 from initializers import HeNormal
