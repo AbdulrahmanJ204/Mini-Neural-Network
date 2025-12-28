@@ -1,4 +1,4 @@
-from layers.initializers.initializer import Initializer
+from initializers.initializer import Initializer
 from layers.layer import Layer
 
 
@@ -20,18 +20,18 @@ class Affine(Layer):
         W = self.initializer.init(input_size, self.output_size)
         b = np.zeros(self.output_size)
         self.input_size = input_size
-        self.params[f"W{self.cnt}"] = W
-        self.params[f"b{self.cnt}"] = b
+        self.params[f"W{self.id}"] = W
+        self.params[f"b{self.id}"] = b
         self.dw = None
         self.db = None
 
     def forward(self, x):
-        out = np.dot(x, self.params[f"W{self.cnt}"]) + self.params[f"b{self.cnt}"]
+        out = np.dot(x, self.params[f"W{self.id}"]) + self.params[f"b{self.id}"]
         self.x = x
         return out
 
     def backward(self, dout):
-        dx = np.dot(dout, self.params[f"W{self.cnt}"].T)
+        dx = np.dot(dout, self.params[f"W{self.id}"].T)
         self.dw = np.dot(self.x.T, dout)
         self.db = np.sum(dout, axis=0)
         return dx
@@ -40,4 +40,4 @@ class Affine(Layer):
         return self.params
 
     def grads(self):
-        return {f"W{self.cnt}": self.dw, f"b{self.cnt}": self.db}
+        return {f"W{self.id}": self.dw, f"b{self.id}": self.db}

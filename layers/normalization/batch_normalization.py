@@ -20,8 +20,8 @@ class BatchNormalization(Layer):
         super().__init__()
 
     def init_weights(self, input_size):
-        self.params[f"gamma{self.cnt}"] = np.ones(input_size) * self.gamma_init
-        self.params[f"beta{self.cnt}"] = np.ones(input_size) * self.beta_init
+        self.params[f"gamma{self.id}"] = np.ones(input_size) * self.gamma_init
+        self.params[f"beta{self.id}"] = np.ones(input_size) * self.beta_init
 
         self.running_mean = np.zeros(input_size)
         self.running_var = np.zeros(input_size)
@@ -53,13 +53,13 @@ class BatchNormalization(Layer):
             xc = x - self.running_mean
             xn = xc / (np.sqrt(self.running_var + 1e-7))
 
-        gamma = self.params[f"gamma{self.cnt}"]
-        beta = self.params[f"beta{self.cnt}"]
+        gamma = self.params[f"gamma{self.id}"]
+        beta = self.params[f"beta{self.id}"]
         out = gamma * xn + beta
         return out
 
     def backward(self, dout):
-        gamma = self.params[f"gamma{self.cnt}"]
+        gamma = self.params[f"gamma{self.id}"]
 
         dbeta = dout.sum(axis=0)
         dgamma = np.sum(self.xn * dout, axis=0)
@@ -75,7 +75,7 @@ class BatchNormalization(Layer):
         return dx
 
     def grads(self):
-        return {f"gamma{self.cnt}": self.dgamma, f"beta{self.cnt}": self.dbeta}
+        return {f"gamma{self.id}": self.dgamma, f"beta{self.id}": self.dbeta}
 
     def parameters(self):
         return self.params

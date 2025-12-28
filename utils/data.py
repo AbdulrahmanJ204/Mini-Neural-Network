@@ -4,7 +4,9 @@ from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 
 
-def fetchData():
+def fetch_mnist_data():
+    print("Loading MNIST dataset...")
+
     X, y = fetch_openml("mnist_784", return_X_y=True, as_frame=False)
     x_train, x_test, t_train, t_test = train_test_split(
         X, y, test_size=10000, shuffle=False
@@ -25,7 +27,7 @@ def fetchData():
     return x_train, x_test, t_train, t_test
 
 
-def normailze_mnist_data(x_train, x_test):
+def normalize_mnist_data(x_train, x_test):
     x_train = x_train.astype(np.float32)
     x_test = x_test.astype(np.float32)
     x_train /= 255.0

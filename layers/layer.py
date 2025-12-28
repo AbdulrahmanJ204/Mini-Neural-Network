@@ -5,7 +5,7 @@ class Layer(ABC):
     counter = 0
 
     def __init__(self):
-        self.cnt = Layer.counter
+        self.id = Layer.counter
         Layer.counter += 1
 
     @abstractmethod

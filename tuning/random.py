@@ -47,20 +47,18 @@ def generate_random_hidden_layers(params):
         layers.append(Affine(neurons_number, init_method()))
         if batch_normalization:
             layers.append(BatchNormalization())
-            
+
         layers.append(activation())
-        
+
         if i != hidden_number - 1:
             layers.append(Dropout(dropout_rate))
-    
+
     return layers, hidden_number
 
 
 class RandomTuner(Tuner):
-    def __init__(self):
-        self.best_params = {}
 
-    def get_best_params(
+    def optimize(
             self,
             x_train,
             x_test,
@@ -94,10 +92,9 @@ class RandomTuner(Tuner):
 
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
+                self.best_trainer= trainer
                 self.best_params = {
-                    "trainer": trainer,
                     "hidden_number": hidden_number,
-                    "network_structure": network.structure(),
                     "optimizer": type(optimizer).__name__,
                     "learning_rate": optimizer.lr,
                     "beta1": 0 if not isinstance(optimizer, Adam) else optimizer.beta1,

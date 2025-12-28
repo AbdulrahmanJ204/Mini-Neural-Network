@@ -1,9 +1,7 @@
-from .data import fetchData, normailze_mnist_data
-from .math import sigmoid, ReLU, tanh, softmax, cross_entropy_error
+from .data import fetch_mnist_data, normalize_mnist_data
 from .visualization import plot_single_train , plot_two_train
 
 __all__ = [
-    'fetchData', 'normailze_mnist_data',
-    'sigmoid', 'ReLU', 'tanh', 'softmax', 'cross_entropy_error',
+    'fetch_mnist_data', 'normalize_mnist_data',
     'plot_single_train' ,'plot_two_train'
 ]

@@ -1,25 +1,18 @@
 import sys
 sys.path.append("..")
 
-from utils import fetchData
+from utils import fetch_mnist_data
 
 from tuning import GridTuner
 
-x_train, x_test, t_train, t_test = fetchData()
-from layers import Affine, SoftMaxWithCrossEntropy, Relu, Tanh, Sigmoid
-from layers.initializers import SmallGaussian, XavierNormal
-from optimizers import AdaGrad, Adam, Momentum, SGD
+x_train, x_test, t_train, t_test = fetch_mnist_data()
+from layers import Affine, SoftMaxWithCrossEntropy, Sigmoid
+from initializers import SmallGaussian, XavierNormal
+from optimizers import Adam
 
-h = GridTuner()
-
-best_params = h.get_best_params(
-    x_train=x_train,
-    x_test=x_test,
-    t_train=t_train,
-    t_test=t_test,
-    output_layer=Affine(10, SmallGaussian()),
-    loss_layer_cls=SoftMaxWithCrossEntropy,
-    params={
+tuner = GridTuner()
+# used small search space to reduce execution time.
+search_space = {
         "hidden_number": [2, 3],
         "layer_props": {
             "layer_neurons_number": [20, 50],
@@ -35,6 +28,20 @@ best_params = h.get_best_params(
         "momentum": [0.9],
         "batch_size": [128],
         "epochs": [3],
-    },
+    }
+best_params = tuner.optimize(
+    x_train=x_train,
+    x_test=x_test,
+    t_train=t_train,
+    t_test=t_test,
+    output_layer=Affine(10, SmallGaussian()),
+    loss_layer_cls=SoftMaxWithCrossEntropy,
+    params=search_space,
 )
-print(best_params["trainer"].network.structure())
+
+trainer = tuner.best_trainer
+
+tuner.print_best_params()
+
+print(trainer.network.structure())
+print(trainer.evaluate(x_test, t_test))

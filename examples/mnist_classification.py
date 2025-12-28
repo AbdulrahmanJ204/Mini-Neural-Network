@@ -13,12 +13,12 @@ sys.path.append("..")
 
 
 from layers import Affine, Relu
-from layers.initializers import HeNormal
+from initializers import HeNormal
 from layers.loss import SoftMaxWithCrossEntropy
 from models import NeuralNetwork
 from training import Trainer
 from optimizers import Adam
-from utils import fetchData, normailze_mnist_data, plot_single_train
+from utils import fetch_mnist_data, normalize_mnist_data, plot_single_train
 
 
 def set_seed(seed=42):
@@ -28,8 +28,8 @@ def set_seed(seed=42):
 set_seed()
 
 # Load data
-x_train, x_test, t_train, t_test = fetchData()
-x_train, x_test = normailze_mnist_data(x_train, x_test)
+x_train, x_test, t_train, t_test = fetch_mnist_data()
+x_train, x_test = normalize_mnist_data(x_train, x_test)
 
 # Create network
 net = NeuralNetwork(
@@ -51,5 +51,6 @@ loss_hist, acc_hist = trainer.fit(
 
 # Evaluate
 test_acc = trainer.evaluate(x_test, t_test)
-print(f"Test Accuracy: {test_acc:.4f}")
+print(f"Test Accuracy: {test_acc:.4f}\n")
+print(net.structure())
 plot_single_train(loss_hist, acc_hist, "MNIST Classification with Neural Network")

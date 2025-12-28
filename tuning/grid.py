@@ -54,7 +54,7 @@ class GridTuner(Tuner):
             "batch_normalization",
         ]
         self._params = {}
-
+        super().__init__()
     def reset(self):
         self._networks_config = []
         self._possible_layers = []
@@ -112,15 +112,15 @@ class GridTuner(Tuner):
 
                 self._networks_config.append({"layers": layers, "loss": loss_layer_cls})
 
-    def get_best_params(
-        self,
-        params: dict,
-        x_train,
-        x_test,
-        t_train,
-        t_test,
-        output_layer: Affine,
-        loss_layer_cls: Type[Loss],
+    def optimize(
+            self,
+            params: dict,
+            x_train,
+            x_test,
+            t_train,
+            t_test,
+            output_layer: Affine,
+            loss_layer_cls: Type[Loss],
     ):
         self.reset()
         self._params = params
@@ -146,10 +146,8 @@ class GridTuner(Tuner):
                         accuracy = trainer.evaluate(x_test, t_test)
                         if accuracy > best_accuracy:
                             best_accuracy = accuracy
+                            self.best_trainer = trainer
                             self.best_params = {
-                                "trainer": trainer,
-                                "hidden_number": len(network.layers) - 1,
-                                "network_structure": network.structure(),
                                 "optimizer": type(optimizer).__name__,
                                 "learning_rate": optimizer.lr,
                                 "beta1": (

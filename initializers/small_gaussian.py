@@ -1,4 +1,4 @@
-from layers.initializers.initializer import Initializer
+from initializers.initializer import Initializer
 import numpy as np
 
 
