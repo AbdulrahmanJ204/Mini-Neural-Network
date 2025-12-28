@@ -14,9 +14,24 @@ import copy
 from itertools import product
 
 
-# todo : format and avoid deep copy
 class LayerSpecs:
+    """Specification for a hidden layer configuration.
+
+    Encapsulates the parameters needed to build a layer including
+    neurons, initialization, activation, dropout, and batch normalization.
+    """
+
     def __init__(self, params):
+        """Initialize layer specification.
+
+        Args:
+            params: Dictionary containing layer configuration parameters:
+                - layer_neurons_number: Number of neurons.
+                - init_method: Weight initializer class.
+                - activation: Activation function class.
+                - dropout_rate: Dropout probability.
+                - batch_normalization: Whether to use batch norm.
+        """
         self.neurons_number = params["layer_neurons_number"]
         self.init_method = params["init_method"]
         self.activation = params["activation"]
@@ -24,6 +39,14 @@ class LayerSpecs:
         self.batch_normalization = params["batch_normalization"]
 
     def build(self, is_last_hidden=False):
+        """Build the layer sequence from specification.
+
+        Args:
+            is_last_hidden: Whether this is the last hidden layer (affects dropout placement).
+
+        Returns:
+            List of Layer objects implementing the specification.
+        """
         layers = [
             Affine(self.neurons_number, self.init_method()),
         ]
@@ -40,7 +63,14 @@ class LayerSpecs:
 
 
 class GridTuner(Tuner):
+    """Grid search hyperparameter tuning.
+
+    Exhaustively searches over all combinations of specified hyperparameters
+    by evaluating every combination in a grid.
+    """
+
     def __init__(self):
+        """Initialize grid tuner."""
         self.best_params = None
         self._networks_config = []
         self._possible_layers = []
@@ -55,17 +85,24 @@ class GridTuner(Tuner):
         ]
         self._params = {}
         super().__init__()
+
     def reset(self):
+        """Reset internal state for a new search."""
         self._networks_config = []
         self._possible_layers = []
         self._possible_optimizers = []
         self._hidden_layers = []
 
     def __generate_layer(self, params):
+        """Generate a layer specification from parameter values.
 
+        Args:
+            params: Dictionary with layer parameters.
+        """
         self._possible_layers.append(LayerSpecs(params))
 
     def __generate_possible_layers(self):
+        """Generate all possible layer configurations by combinatorial product."""
         param_lists = [
             self._params["layer_props"][key] for key in self._layer_params_keys
         ]
@@ -75,6 +112,7 @@ class GridTuner(Tuner):
             self.__generate_layer(layer_params)
 
     def __generate_possible_optimizers(self):
+        """Generate all possible optimizer configurations."""
         for optimizer in self._params["optimizer"]:
             for learning_rate in self._params["learning_rate"]:
                 if optimizer == Adam:
@@ -94,6 +132,11 @@ class GridTuner(Tuner):
                     self._possible_optimizers.append(optimizer(lr=learning_rate))
 
     def __generate_hidden_layers(self, n_layers):
+        """Generate all combinations of n hidden layers.
+
+        Args:
+            n_layers: Number of hidden layers.
+        """
         for combo in product(self._possible_layers, repeat=n_layers):
             self._hidden_layers.append(
                 [
@@ -103,6 +146,12 @@ class GridTuner(Tuner):
             )
 
     def __generate_possible_networks(self, output_layer, loss_layer_cls: Type[Loss]):
+        """Generate all possible network architectures.
+
+        Args:
+            output_layer: Output layer specification.
+            loss_layer_cls: Loss function class.
+        """
         for n_layers in self._params["hidden_number"]:
             self._hidden_layers = []
             self.__generate_hidden_layers(n_layers)
@@ -113,15 +162,29 @@ class GridTuner(Tuner):
                 self._networks_config.append({"layers": layers, "loss": loss_layer_cls})
 
     def optimize(
-            self,
-            params: dict,
-            x_train,
-            x_test,
-            t_train,
-            t_test,
-            output_layer: Affine,
-            loss_layer_cls: Type[Loss],
+        self,
+        params: dict,
+        x_train,
+        x_test,
+        t_train,
+        t_test,
+        output_layer: Affine,
+        loss_layer_cls: Type[Loss],
     ):
+        """Perform grid search over all hyperparameter combinations.
+
+        Args:
+            params: Dictionary of hyperparameter ranges to search over.
+            x_train: Training input data.
+            x_test: Test input data.
+            t_train: Training target labels.
+            t_test: Test target labels.
+            output_layer: Output layer specification.
+            loss_layer_cls: Loss function class.
+
+        Returns:
+            Dictionary of best found hyperparameters.
+        """
         self.reset()
         self._params = params
         self.__generate_possible_layers()
