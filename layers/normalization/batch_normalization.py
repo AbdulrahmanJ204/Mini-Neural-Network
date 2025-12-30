@@ -4,21 +4,7 @@ from layers.layer import Layer
 
 
 class BatchNormalization(Layer):
-    """Batch Normalization layer.
-
-    Normalizes activations of the previous layer for each batch during training,
-    which can lead to faster convergence and allows for higher learning rates.
-    Uses running statistics for inference.
-    """
-
     def __init__(self, gamma=1.0, beta=0.0, momentum=0.9):
-        """Initialize Batch Normalization layer.
-
-        Args:
-            gamma: Initial scale parameter (default: 1.0).
-            beta: Initial shift parameter (default: 0.0).
-            momentum: Momentum for running mean/variance (default: 0.9).
-        """
         self.gamma_init = gamma
         self.beta_init = beta
         self.running_mean = None
@@ -34,11 +20,6 @@ class BatchNormalization(Layer):
         super().__init__()
 
     def init_weights(self, input_size):
-        """Initialize gamma and beta parameters.
-
-        Args:
-            input_size: Number of features.
-        """
         self.params[f"gamma{self.id}"] = np.ones(input_size) * self.gamma_init
         self.params[f"beta{self.id}"] = np.ones(input_size) * self.beta_init
 
@@ -46,18 +27,6 @@ class BatchNormalization(Layer):
         self.running_var = np.zeros(input_size)
 
     def forward(self, x, train_flg=True):
-        """Forward pass through batch normalization.
-
-        During training: Normalizes using batch statistics.
-        During inference: Normalizes using running statistics.
-
-        Args:
-            x: Input of shape (batch_size, features).
-            train_flg: Whether in training mode (default: True).
-
-        Returns:
-            Normalized output of same shape as input.
-        """
         if self.running_mean is None:
             n, d = x.shape
             self.running_mean = np.zeros(d)
@@ -66,7 +35,7 @@ class BatchNormalization(Layer):
         if train_flg:
             mu = x.mean(axis=0)
             xc = x - mu
-            var = np.mean(xc**2, axis=0)
+            var = np.mean(xc ** 2, axis=0)
             std = np.sqrt(var + 1e-7)
             xn = xc / std
 
@@ -75,10 +44,10 @@ class BatchNormalization(Layer):
             self.xn = xn
             self.std = std
             self.running_mean = (
-                self.momentum * self.running_mean + (1 - self.momentum) * mu
+                    self.momentum * self.running_mean + (1 - self.momentum) * mu
             )
             self.running_var = (
-                self.momentum * self.running_var + (1 - self.momentum) * var
+                    self.momentum * self.running_var + (1 - self.momentum) * var
             )
         else:
             xc = x - self.running_mean
@@ -90,14 +59,6 @@ class BatchNormalization(Layer):
         return out
 
     def backward(self, dout):
-        """Backward pass for batch normalization gradient computation.
-
-        Args:
-            dout: Gradient from next layer.
-
-        Returns:
-            Gradient with respect to input.
-        """
         gamma = self.params[f"gamma{self.id}"]
 
         dbeta = dout.sum(axis=0)
@@ -114,17 +75,7 @@ class BatchNormalization(Layer):
         return dx
 
     def grads(self):
-        """Get parameter gradients.
-
-        Returns:
-            Dictionary containing gamma and beta gradients.
-        """
         return {f"gamma{self.id}": self.dgamma, f"beta{self.id}": self.dbeta}
 
     def parameters(self):
-        """Get layer parameters.
-
-        Returns:
-            Dictionary containing gamma and beta parameters.
-        """
         return self.params

@@ -15,23 +15,9 @@ import numpy as np
 import copy
 
 
+# todo : format
+
 def get_random_optimizer(params):
-    """Create a random optimizer from specified parameter options.
-
-    Randomly samples optimizer class, learning rate, and optimizer-specific
-    hyperparameters (beta1/beta2 for Adam, momentum for Momentum).
-
-    Args:
-        params: Dictionary containing optimizer configuration options:
-            - optimizer: List of optimizer classes to choose from.
-            - learning_rate: List of learning rates.
-            - beta1: List of beta1 values (for Adam).
-            - beta2: List of beta2 values (for Adam).
-            - momentum: List of momentum values (for Momentum optimizer).
-
-    Returns:
-        Instantiated optimizer object with randomly sampled parameters.
-    """
     optimizer_class = np.random.choice(params["optimizer"])
     learning_rate = np.random.choice(params["learning_rate"])
 
@@ -48,27 +34,6 @@ def get_random_optimizer(params):
 
 
 def generate_random_hidden_layers(params):
-    """Generate a random network architecture.
-
-    Randomly samples the number of hidden layers and randomly configures each layer
-    with different neuron counts, initializers, activations, dropout rates, and
-    batch normalization settings.
-
-    Args:
-        params: Dictionary containing layer configuration options:
-            - hidden_number: List of possible numbers of hidden layers.
-            - layer_props: Dictionary with lists of options for:
-                - layer_neurons_number
-                - init_method
-                - activation
-                - dropout_rate
-                - batch_normalization
-
-    Returns:
-        Tuple of (layers, hidden_number) where:
-        - layers: List of Layer objects forming the network.
-        - hidden_number: Number of hidden layers used.
-    """
     hidden_number = np.random.choice(params["hidden_number"])
     layer_props = params["layer_props"]
     layers = []
@@ -92,38 +57,18 @@ def generate_random_hidden_layers(params):
 
 
 class RandomTuner(Tuner):
-    """Random search hyperparameter tuning.
-
-    Performs hyperparameter search by randomly sampling from specified ranges,
-    useful for exploring large hyperparameter spaces more efficiently than grid search.
-    """
 
     def optimize(
-        self,
-        x_train,
-        x_test,
-        t_train,
-        t_test,
-        output_layer: Affine,
-        loss_layer_cls: Type[Loss],
-        params,
-        n_samples=10,
+            self,
+            x_train,
+            x_test,
+            t_train,
+            t_test,
+            output_layer: Affine,
+            loss_layer_cls: Type[Loss],
+            params,
+            n_samples=10,
     ):
-        """Perform random search over hyperparameter space.
-
-        Args:
-            x_train: Training input data.
-            x_test: Test input data.
-            t_train: Training target labels.
-            t_test: Test target labels.
-            output_layer: Output layer specification.
-            loss_layer_cls: Loss function class.
-            params: Dictionary of hyperparameter ranges to sample from.
-            n_samples: Number of random configurations to evaluate (default: 10).
-
-        Returns:
-            Dictionary of best found hyperparameters.
-        """
         best_accuracy = 0
         self.best_params = {}
         for _ in range(n_samples):
@@ -147,7 +92,7 @@ class RandomTuner(Tuner):
 
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
-                self.best_trainer = trainer
+                self.best_trainer= trainer
                 self.best_params = {
                     "hidden_number": hidden_number,
                     "optimizer": type(optimizer).__name__,
