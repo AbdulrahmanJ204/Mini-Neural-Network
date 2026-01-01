@@ -4,13 +4,12 @@ from optimizers.optimizer import Optimizer
 import numpy as np
 
 
-
 class Trainer:
     def __init__(self, network: NeuralNetwork, optimizer: Optimizer):
         self.network = network
         self.optimizer = optimizer
 
-    def fit(self, x_train, x_test, t_train, t_test, batch_size=100, epochs=10):
+    def fit(self, x_train, x_val, t_train, t_val, batch_size=100, epochs=10):
 
         if not self.network.initialized:
             input_size = x_train.shape[1]
@@ -34,7 +33,7 @@ class Trainer:
                 loss = self.train_step(x_batch, t_batch)
                 loss_hist.append(loss)
 
-            acc = self.network.accuracy(x_test, t_test)
+            acc = self.network.accuracy(x_val, t_val)
             accuracy_hist.append(acc)
 
             print(f" Epoch {i + 1}, Loss: {loss:.4f}, Acc: {acc:.4f}")
@@ -50,4 +49,5 @@ class Trainer:
         return loss
 
     def evaluate(self, x_test, t_test):
+        
         return self.network.accuracy(x_test, t_test)

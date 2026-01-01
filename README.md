@@ -1,19 +1,21 @@
 # Neural Network Library
 
-## Overview 
+## Overview
 
 ### Core Implementation
 
 This project builds upon the concepts and base implementations introduced in Lab 5 and Lab 6, extending them into a fully modular neural network library.
- I have:
+I have:
+
 - Organized the code into structured files and folders
 - Made the Neural Network class **dynamic** so layers can be added flexibly instead of being hardcoded
 
 ### Dynamic Network Architecture
 
 The neural network is implemented in a fully dynamic way. Instead of hardcoding the architecture, the network receives:
+
 - A list of layers (Affine, Activation, Normalization, Regularization)
-- A loss layer (MSE or Softmax with Cross Entropy)
+- A loss layer (MSE , BCE , Softmax with Cross Entropy)
 
 Each layer initializes its parameters lazily once the input size is known.  
 The method `network.init_weights(input_size)` propagates the input size through all layers and initializes their parameters accordingly.
@@ -32,32 +34,38 @@ The method `network.init_weights(input_size)` propagates the input size through 
 All layers inherit from the `Layer` base class. Each layer is assigned a unique ID, which allows optimizers to correctly track and update parameters and gradients.
 
 #### Affine Layer (Main Modifications)
+
 The Affine Layer was my primary focus:
+
 - Takes `output_size` and an `initializer` (e.g., Xavier, He) in the constructor
 - Has an `init_weights` method that takes `input_size` as a parameter
 - Uses the initializer to initialize layer weights
 - The `init_weights` method is called by the `NeuralNetwork.init_weights()` method
 
 #### Batch Normalization
+
 - Added `init_weights` method
 - Rest of the implementation is the same as lab code
 
 #### Other Layers
+
 - Reused core logic from the lab implementations with small structural adjustments for compatibility
-- Added **Linear** and **Tanh** activation layers
-- Implemented **Mean Squared Error (MSE)** loss
+- Added **Tanh** activation layer
+- Implemented **Mean Squared Error (MSE)** and **Binary Cross Entropy** loss Layers.
 - Most layers follow the lab implementations without major changes
 
 ### Weight Initializers
 
 Implemented three initialization strategies:
+
 - He Normal
-- Xavier Normal  
+- Xavier Normal
 - Gaussian initialization
 
 ### Optimizer System
 
 Created an abstract `Optimizer` class:
+
 - Has an `update` method that takes a network and gradients
 - Updates the network parameters using the gradients
 - Implemented optimization algorithms based on the Lab 6 implementations, adapted to work with the generalized layer and parameter system:
@@ -69,25 +77,30 @@ Created an abstract `Optimizer` class:
 ### Trainer
 
 The `Trainer` class:
+
 - Takes a network and optimizer in the constructor
 - Call `trainer.fit(...)` to train the network
 
 #### Trainer Methods
+
 - `fit(x_train, x_test, t_train, t_test, batch_size, epochs)` - Trains the network
 - `evaluate(x_test, t_test)` - Evaluates on test set
 - `train_step(x_batch, t_batch)` - Single training iteration
 
 ### Hyperparameter Tuning
+
 The tuning module automates both architecture and training hyperparameter selection.
 
 I've implemented two tuning methods:
 
 **Random Tuner** (easier and faster):
+
 - Pass parameters to the tuner
 - Generates random parameter combinations `n_samples` times
 - Returns the best parameters (highest accuracy)
 
 **Grid Tuner** (exhaustive):
+
 - Generates every possible combination of parameters
 - Tests all combinations
 - Takes a long time to run
@@ -104,67 +117,71 @@ I've implemented two tuning methods:
 ---
 
 ## Project Structure
+
 ```
 ├── initializers/              # Weight initialization strategies
 │   ├── initializer.py        # Abstract base class
-│   ├── he_normal.py          
-│   ├── small_gaussian.py     
-│   └── xavier_normal.py      
+│   ├── he_normal.py
+│   ├── small_gaussian.py
+│   └── xavier_normal.py
 │
 ├── layers/                    # Each layer has forward and backward methods
 │   ├── layer.py              # Base layer class
 │   ├── affine.py             # Fully connected layer
 │   │
-│   ├── activation/           
-│   │   ├── linear.py         
-│   │   ├── relu.py           
-│   │   ├── sigmoid.py        
-│   │   └── tanh.py           
+│   ├── activation/
+│   │   ├── linear.py
+│   │   ├── relu.py
+│   │   ├── sigmoid.py
+│   │   └── tanh.py
 │   │
-│   ├── loss/                 
+│   ├── loss/
 │   │   ├── loss.py           # Base loss class
 │   │   ├── mean_squared_error.py
 │   │   └── softmax_with_cross_entropy.py
 │   │
-│   ├── normalization/        
+│   ├── normalization/
 │   │   └── batch_normalization.py
 │   │
-│   └── regularization/       
-│       └── dropout.py        
+│   └── regularization/
+│       └── dropout.py
 │
-├── models/                    
+├── models/
 │   └── neural_network.py     # Main network class
 │
-├── optimizers/               
+├── optimizers/
 │   ├── optimizer.py          # Abstract base class
-│   ├── sgd.py                
-│   ├── momentum.py           
-│   ├── adagrad.py            
-│   └── adam.py               
+│   ├── sgd.py
+│   ├── momentum.py
+│   ├── adagrad.py
+│   └── adam.py
 │
-├── training/                 
+├── training/
 │   └── trainer.py            # Trains network using optimizer
 │
-├── tuning/                   
+├── tuning/
 │   ├── tuner.py              # Abstract base class
 │   ├── grid.py               # Grid search - tests all combinations
 │   └── random.py             # Random search - samples n configurations
 │
-├── examples/                 
+├── examples/
 │   ├── mnist_classification.py
-│   ├── grid_tuner.py         
-│   └── random_tuner.py       
+│   ├── grid_tuner.py
+│   └── random_tuner.py
 │
-└── utils/                    
+└── utils/
     ├── data.py               # MNIST data loading helpers
     └── visualization.py      # Loss and accuracy plotting
 ```
+
 ## Installation
 
 ```bash
 pip install -r requirements.txt
 ```
+
 ## Usage
+
 ### Mnist Classification Example
 
 ```python
@@ -218,6 +235,73 @@ print(net.structure())
 
 plot_single_train(loss_hist, acc_hist, "MNIST Classification with Neural Network")
 ```
+
+### Breaset Cancer Binary Classification Example
+
+```python
+import sys
+import os
+
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import random
+import numpy as np
+
+from layers import Affine, Relu, BatchNormalization, Dropout
+from initializers import HeNormal
+from layers.loss.bce import BCE
+from models import NeuralNetwork
+from training import Trainer
+from optimizers import Adam
+from utils.visualization import plot_single_train
+from utils.data import fetch_breast_cancer_data
+
+
+def set_seed(seed=42):
+    np.random.seed(seed)
+    random.seed(seed)
+
+
+
+set_seed()
+
+# Load data
+x_train, x_test, t_train, t_test = fetch_breast_cancer_data()
+
+
+net = NeuralNetwork(
+    layers=[
+        Affine(64, HeNormal()),
+        BatchNormalization(),
+        Relu(),
+        Dropout(0.3),
+        Affine(32, HeNormal()),
+        Relu(),
+        Dropout(0.2),
+        Affine(16, HeNormal()),
+        Relu(),
+        Affine(1, HeNormal()),
+    ],
+    loss_layer=BCE(),
+)
+
+# Train
+trainer = Trainer(net, Adam(lr=0.001))
+loss_hist, acc_hist = trainer.fit(
+    x_train, x_test, t_train, t_test, batch_size=32, epochs=50
+)
+
+
+test_acc = trainer.evaluate(x_test, t_test)
+print(f"Test Accuracy: {test_acc:.4f}\n")
+
+print(net.structure())
+
+
+plot_single_train(loss_hist, acc_hist, "Breast_Cancer_Binary_Classification")
+```
+
 ### Grid Tuner Example
 
 ```python
@@ -266,6 +350,7 @@ print(trainer.network.structure())
 print(trainer.evaluate(x_test, t_test))
 
 ```
+
 ### Random Tuner Example
 
 ```python
@@ -317,6 +402,3 @@ tuner.print_best_params()
 print(trainer.network.structure())
 print(trainer.evaluate(x_test, t_test))
 ```
-
-
-        

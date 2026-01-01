@@ -15,7 +15,8 @@ import numpy as np
 import copy
 
 
-# todo : format
+
+
 
 def get_random_optimizer(params):
     optimizer_class = np.random.choice(params["optimizer"])
@@ -59,15 +60,15 @@ def generate_random_hidden_layers(params):
 class RandomTuner(Tuner):
 
     def optimize(
-            self,
-            x_train,
-            x_test,
-            t_train,
-            t_test,
-            output_layer: Affine,
-            loss_layer_cls: Type[Loss],
-            params,
-            n_samples=10,
+        self,
+        x_train,
+        x_val,
+        t_train,
+        t_val,
+        output_layer: Affine,
+        loss_layer_cls: Type[Loss],
+        params,
+        n_samples=10,
     ):
         best_accuracy = 0
         self.best_params = {}
@@ -85,14 +86,12 @@ class RandomTuner(Tuner):
             epochs = np.random.choice(params["epochs"])
 
             trainer = Trainer(network, optimizer)
-            loss, acc = trainer.fit(
-                x_train, x_test, t_train, t_test, batch_size, epochs
-            )
-            accuracy = trainer.evaluate(x_test, t_test)
+            loss, acc = trainer.fit(x_train, x_val, t_train, t_val, batch_size, epochs)
+            accuracy = trainer.evaluate(x_val, t_val)
 
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
-                self.best_trainer= trainer
+                self.best_trainer = trainer
                 self.best_params = {
                     "hidden_number": hidden_number,
                     "optimizer": type(optimizer).__name__,

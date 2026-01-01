@@ -1,7 +1,7 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
 import random
@@ -35,13 +35,13 @@ search_space = {
 }
 best_params = tuner.optimize(
     x_train=x_train,
-    x_test=x_test,
+    x_val=x_test,
     t_train=t_train,
-    t_test=t_test,
+    t_val=t_test,
     output_layer=Affine(10, SmallGaussian()),
     loss_layer_cls=SoftMaxWithCrossEntropy,
     params=search_space,
-    n_samples=2
+    n_samples=2,
 )
 trainer = tuner.best_trainer
 

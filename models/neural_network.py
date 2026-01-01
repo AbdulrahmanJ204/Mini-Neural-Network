@@ -14,6 +14,7 @@ class NeuralNetwork:
         self.layers = layers
         self.last_layer = loss_layer
         self.initialized = False
+
     def add_layer(self, layer: Layer):
         """
         Adds layer to the network
@@ -21,6 +22,7 @@ class NeuralNetwork:
         """
         self.layers.append(layer)
         self.initialized = False
+
     def init_weights(self, input_size):
         current_size = input_size
         self.initialized = True
@@ -45,9 +47,14 @@ class NeuralNetwork:
 
     def accuracy(self, x, t):
         y = self.predict(x, False)
-        y = np.argmax(y, axis=1)
-        if t.ndim != 1:
-            t = np.argmax(t, axis=1)
+
+        if y.shape[1] == 1:  # for binary classification
+            y = (y >= 0).astype(int).flatten()
+            t = t.flatten().astype(int)
+        else:  # multi class
+            y = np.argmax(y, axis=1)
+            if t.ndim != 1:
+                t = np.argmax(t, axis=1)
 
         accuracy = np.sum(y == t) / len(x)
         return accuracy
@@ -85,7 +92,9 @@ class NeuralNetwork:
                 layer_info["input_size"] = layer.input_size
                 layer_info["output_size"] = layer.output_size
                 layer_info["initializer"] = type(layer.initializer).__name__
-                layer_info["params"] = layer.input_size * layer.output_size + layer.output_size
+                layer_info["params"] = (
+                    layer.input_size * layer.output_size + layer.output_size
+                )
                 current_size = layer.output_size
 
             elif isinstance(layer, BatchNormalization):
@@ -121,23 +130,24 @@ def _format_as_table(structure):
     total_len = (layers_len + type_len + input_len + output_len + params_len) + 3
     lines.append("=" * total_len)
     lines.append(
-        f"{'Layer':<{layers_len}} {'Type':<{type_len}} {'Input':<{input_len}} {'Output':<{output_len}} {'Params':<{params_len}}")
+        f"{'Layer':<{layers_len}} {'Type':<{type_len}} {'Input':<{input_len}} {'Output':<{output_len}} {'Params':<{params_len}}"
+    )
     lines.append("=" * total_len)
 
     total_params = 0
     for i, layer in enumerate(structure):
         layer_name = f"Layer {i + 1}"
-        layer_type = layer['type']
-        input_size = layer.get('input_size', '-')
-        output_size = layer.get('output_size', '-')
-        params = layer.get('params', 0)
+        layer_type = layer["type"]
+        input_size = layer.get("input_size", "-")
+        output_size = layer.get("output_size", "-")
+        params = layer.get("params", 0)
         total_params += params
 
         # Add extra info for specific layers
         extra = ""
-        if layer['type'] == 'Affine':
+        if layer["type"] == "Affine":
             extra = f" ({layer.get('initializer', '')})"
-        elif layer['type'] == 'Dropout':
+        elif layer["type"] == "Dropout":
             extra = f" (rate={layer.get('dropout_rate', 0):.2f})"
 
         lines.append(
@@ -146,7 +156,9 @@ def _format_as_table(structure):
         )
 
     lines.append("=" * total_len)
-    lines.append(f"{'Total Parameters:':<{total_len - params_len}} {total_params:<{params_len}}")
+    lines.append(
+        f"{'Total Parameters:':<{total_len - params_len}} {total_params:<{params_len}}"
+    )
     lines.append("=" * total_len)
 
     return "\n".join(lines)

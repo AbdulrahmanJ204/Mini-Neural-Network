@@ -9,16 +9,16 @@ class MeanSquaredError(Loss):
         self.y = None
         self.t = None
         super().__init__()
-        
+
     def forward(self, y, t):
         self.y = y
         self.t = t
 
-        self.loss = np.sum((y - t) ** 2) / len(self.t)
+        self.loss = np.mean(np.mean((y - t) ** 2, axis=1))
         return self.loss
 
     def backward(self, dout=1):
-        dx = dout * 2 * (self.y - self.t) / len(self.t)
+        batch_size = self.y.shape[0]
+        n_features = self.y.shape[1] if self.y.ndim > 1 else 1
+        dx = dout * 2 * (self.y - self.t) / (n_features * batch_size)
         return dx
-
-
