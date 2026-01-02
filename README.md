@@ -421,13 +421,7 @@ layer.init_weights(input_size=784)  # Now W shape is (784, 128)
 
 ### Layer IDs and Parameter Tracking
 
-Each layer receives a unique ID, enabling optimizers to correctly track and update parameters across the network:
-
-```python
-# Optimizer uses layer IDs to manage parameters
-optimizer.update(network, gradients)
-# Updates network.params[layer_id]['W'], network.params[layer_id]['b']
-```
+Each layer receives a unique ID, enabling optimizers to correctly track and update parameters across the network
 
 ### Training Loop
 
