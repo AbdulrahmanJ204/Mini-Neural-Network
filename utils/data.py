@@ -10,6 +10,18 @@ import numpy as np
 
 
 def fetch_mnist_data():
+    """Load and preprocess the MNIST handwritten digits dataset.
+
+    Downloads MNIST dataset from OpenML and splits it into training and test sets.
+    Returns raw pixel values without normalization.
+
+    Returns:
+        Tuple of (x_train, x_test, t_train, t_test) where:
+        - x_train: Training input of shape (50000, 784).
+        - x_test: Test input of shape (10000, 784).
+        - t_train: Training labels (one-hot encoded) of shape (50000, 10).
+        - t_test: Test labels (one-hot encoded) of shape (10000, 10).
+    """
     print("Loading MNIST dataset...")
 
     X, y = fetch_openml("mnist_784", return_X_y=True, as_frame=False)
@@ -32,6 +44,17 @@ def fetch_mnist_data():
 
 
 def normalize_mnist_data(x_train, x_test):
+    """Normalize MNIST pixel values to [0, 1] range.
+
+    Divides pixel values (originally 0-255) by 255 to normalize to [0, 1].
+
+    Args:
+        x_train: Training input of shape (num_train, 784).
+        x_test: Test input of shape (num_test, 784).
+
+    Returns:
+        Tuple of (x_train_norm, x_test_norm) with normalized values.
+    """
     x_train = x_train.astype(np.float32)
     x_test = x_test.astype(np.float32)
     x_train /= 255.0

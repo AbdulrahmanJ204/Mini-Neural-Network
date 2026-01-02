@@ -9,21 +9,45 @@ from layers.loss.loss import Loss
 
 
 class NeuralNetwork:
+    """Neural network model combining multiple layers.
+
+    Manages the composition of layers, weight initialization, forward/backward passes,
+    and provides utility methods for evaluation and inspection.
+    """
+
     def __init__(self, layers: List[Layer], loss_layer: Loss):
+        """Initialize neural network.
+
+        Args:
+            layers: List of Layer objects forming the network.
+            loss_layer: Loss function layer for computing the loss.
+        """
         # Layer.reset_counter()
         self.layers = layers
         self.last_layer = loss_layer
         self.initialized = False
 
     def add_layer(self, layer: Layer):
-        """
-        Adds layer to the network
-        make sure to initialize the network after adding new layer if you initialized it before.
+        """Add a new layer to the network.
+
+        Note: Make sure to reinitialize the network after adding new layers if it was
+        previously initialized.
+
+        Args:
+            layer: Layer object to add to the network.
         """
         self.layers.append(layer)
         self.initialized = False
 
     def init_weights(self, input_size):
+        """Initialize weights for all layers based on input size.
+
+        Sequentially initializes weights for Affine and BatchNormalization layers,
+        tracking the output size of each layer to determine the input size of the next.
+
+        Args:
+            input_size: Number of input features.
+        """
         current_size = input_size
         self.initialized = True
         for layer in self.layers:
@@ -34,6 +58,15 @@ class NeuralNetwork:
                 layer.init_weights(current_size)
 
     def predict(self, x, train_flg=True):
+        """Forward pass through the network to get predictions.
+
+        Args:
+            x: Input data of shape (batch_size, input_size).
+            train_flg: Whether in training mode (affects Dropout and BatchNormalization).
+
+        Returns:
+            Network predictions (output of last layer before loss).
+        """
         for layer in self.layers:
             if isinstance(layer, (BatchNormalization, Dropout)):
                 x = layer.forward(x, train_flg)
@@ -42,10 +75,28 @@ class NeuralNetwork:
         return x
 
     def loss(self, x, t):
+        """Compute loss on input-target pair.
+
+        Args:
+            x: Input data of shape (batch_size, input_size).
+            t: Target labels of shape (batch_size, num_classes).
+
+        Returns:
+            Loss value (scalar).
+        """
         y = self.predict(x)
         return self.last_layer.forward(y, t)
 
     def accuracy(self, x, t):
+        """Compute classification accuracy on input-target pair.
+
+        Args:
+            x: Input data of shape (batch_size, input_size).
+            t: Target labels (one-hot encoded or class indices).
+
+        Returns:
+            Accuracy value in range [0, 1].
+        """
         y = self.predict(x, False)
 
         if y.shape[1] == 1:  # for binary classification
@@ -60,9 +111,14 @@ class NeuralNetwork:
         return accuracy
 
     def gradient(self, x, t):
-        """
-        takes X (input data) and t (labels data)
-        return the gradients of the network
+        """Compute gradients of all network parameters using backpropagation.
+
+        Args:
+            x: Input data of shape (batch_size, input_size).
+            t: Target labels of shape (batch_size, num_classes).
+
+        Returns:
+            List of gradient dictionaries, one for each layer (in order).
         """
         loss = self.loss(x, t)
         dout = self.last_layer.backward()
@@ -75,8 +131,10 @@ class NeuralNetwork:
         return list(reversed(grads))
 
     def structure(self):
-        """
-        Get network structure.
+        """Get network structure as formatted ASCII table.
+
+        Returns:
+            Formatted string containing network structure with layer details and parameter counts.
         """
         structure = []
         current_size = None
@@ -120,7 +178,14 @@ class NeuralNetwork:
 
 
 def _format_as_table(structure):
-    """Format structure as ASCII table"""
+    """Format network structure as ASCII table.
+
+    Args:
+        structure: List of layer information dictionaries.
+
+    Returns:
+        Formatted string representation of the network structure.
+    """
     lines = []
     layers_len = 20
     type_len = 30
